@@ -1,5 +1,3 @@
-const socket = io();
-
 const loginForm = document.querySelector("#welcome-form");
 const messagesSection = document.querySelector("#messages-section");
 const messagesList = document.querySelector("#messages-list");
@@ -7,23 +5,31 @@ const addMessageForm = document.querySelector("#add-messages-form");
 const userNameInput = document.querySelector("#username");
 const messageContentInput = document.querySelector("#message-content")
 
-/* socets */
-socket.on('message', ({ author, content }) => addMessage(author, content));
-
 let userName = '';
 
+/* socets */
+const socket = io();
+socket.on('message', ({ author, content }) => addMessage(author, content));
+
+
 /* login form */
-loginForm.addEventListener('submit', login = (event) => {
-    if(userNameInput.value){
-    event.preventDefault();
-    userName = userNameInput.value; //get value from username imput
-    loginForm.classList.remove('show'); //remove class 'show' from login form 
-    messagesSection.classList.add('show'); //add class 'show' to messages section
-    } else {
-        alert('You need to log in...!');
-    };
+const login = (e) => {
+  if(userNameInput.value){
+  e.preventDefault();
+  userName = userNameInput.value; //get value from username imput
+  loginForm.classList.remove('show'); //remove class 'show' from login form 
+  messagesSection.classList.add('show'); //add class 'show' to messages section
+  } else {
+      alert('You need to log in...!');
+  };
+};
+
+/* add eventListerner for login form */
+loginForm.addEventListener('submit', () => {
+  login(event);
 });
 
+/* function to create HTML code inside messages list */
 const addMessage = (author, content) => {
     const message = document.createElement('li');
     message.classList.add('message');
@@ -39,8 +45,9 @@ const addMessage = (author, content) => {
   };
 
 /* add messages form */
-addMessageForm.addEventListener('submit', sendMessage = (event) => {
-  event.preventDefault();
+
+const sendMessage = (e) => {
+  e.preventDefault();
 
   let messageContent = messageContentInput.value;
 
@@ -51,6 +58,11 @@ addMessageForm.addEventListener('submit', sendMessage = (event) => {
     } else {
         alert('You need to type your message...')
     }
+};
+
+/* add eventListener for messages form */
+addMessageForm.addEventListener('submit', () => {
+  sendMessage(event);
 });
 
 
