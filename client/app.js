@@ -4,12 +4,16 @@ const messagesList = document.querySelector("#messages-list");
 const addMessageForm = document.querySelector("#add-messages-form");
 const userNameInput = document.querySelector("#username");
 const messageContentInput = document.querySelector("#message-content")
+const welcomeTextDiv = document.querySelector("#welcome-text");
 
 let userName = '';
+const welcomeMessage = [' has joined the conversation!', ' has left the conversation... :('];
 
 /* socets */
 const socket = io();
 socket.on('message', ({ author, content }) => addMessage(author, content));
+socket.on('user', ({user}) => addMessage('CHAT BOT', '<i>' + user + welcomeMessage[0] + '</i>' ));
+socket.on('removeUser', (user) => addMessage('CHAT BOT', '<i>' + user + welcomeMessage[1] + '</i>'));
 
 
 /* login form */
@@ -17,6 +21,7 @@ const login = (e) => {
   if(userNameInput.value){
   e.preventDefault();
   userName = userNameInput.value; //get value from username imput
+  socket.emit('user', { user: userName});
   loginForm.classList.remove('show'); //remove class 'show' from login form 
   messagesSection.classList.add('show'); //add class 'show' to messages section
   } else {
@@ -44,6 +49,7 @@ const addMessage = (author, content) => {
     messagesList.appendChild(message);
   };
 
+
 /* add messages form */
 
 const sendMessage = (e) => {
@@ -53,7 +59,7 @@ const sendMessage = (e) => {
 
   if(messageContentInput.value){
     addMessage(userName, messageContentInput.value);
-    socket.emit('message', { author: userName, content: messageContent })
+    socket.emit('message', { author: userName, content: messageContent });
     messageContentInput.value = '';
     } else {
         alert('You need to type your message...')
